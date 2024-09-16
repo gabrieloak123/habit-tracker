@@ -8,21 +8,22 @@ interface CreateGoalCompletionRequest {
 }
 
 export async function createGoalCompletion({ goalId }: CreateGoalCompletionRequest) {
-    const firstDayOfWeek= dayjs().startOf('week').toDate()
+    const firstDayOfWeek = dayjs().startOf('week').toDate()
     const lastDayOfWeek = dayjs().endOf('week').toDate()
+
     const goalsCompletionCounts = db.$with('goal_completions_couts').as(
         db.select({
             goalId: goalCompletions.goalId,
             completionCount: count(goalCompletions.id)
                 .as('completionCount'),
         })
-        .from(goalCompletions)
-        .where(and(
-            gte(goalCompletions.createdAt, firstDayOfWeek),
-            lte(goalCompletions.createdAt, lastDayOfWeek),
-            eq(goalCompletions.goalId, goalId)))
-        .groupBy(goalCompletions.goalId)
-     )
+            .from(goalCompletions)
+            .where(and(
+                gte(goalCompletions.createdAt, firstDayOfWeek),
+                lte(goalCompletions.createdAt, lastDayOfWeek),
+                eq(goalCompletions.goalId, goalId)))
+            .groupBy(goalCompletions.goalId)
+    )
 
 
     const result = await db
@@ -40,7 +41,7 @@ export async function createGoalCompletion({ goalId }: CreateGoalCompletionReque
 
     const { completionCount, desiredWeeklyFrequency } = result[0]
 
-    if(completionCount >= desiredWeeklyFrequency) {
+    if (completionCount >= desiredWeeklyFrequency) {
         throw new Error('Goal already completed this week')
     }
     const insertResult = await db

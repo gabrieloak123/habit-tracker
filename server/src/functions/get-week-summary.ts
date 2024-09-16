@@ -23,7 +23,7 @@ export async function getWeekSummary() {
         db.select({
             id: goalCompletions.id,
             title: goals.title,
-            completedAtTime: goalCompletions.createdAt,
+            completedAt: goalCompletions.createdAt,
             completedAtDate: sql`
                 DATE(${goalCompletions.createdAt})
             `.as('completedAtDate'),
@@ -44,7 +44,7 @@ export async function getWeekSummary() {
                     JSON_BUILD_OBJECT(
                         'id', ${goalsCompletedOnWeek.id},
                         'title', ${goalsCompletedOnWeek.title},
-                        'completedAtDate', ${goalsCompletedOnWeek.completedAtDate}
+                        'completedAt', ${goalsCompletedOnWeek.completedAt}
                     )
                 )
             `.as('completions')
